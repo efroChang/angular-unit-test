@@ -18,6 +18,9 @@ describe('TodosComponent', () => {
     component = new TodosComponent( todoService );
   });
 
+  // --------------------------------
+  // Test TodosComponent.getTodos()
+  // --------------------------------  
   it('should set the todos property when the items returned from the HTTP server', () => {
 
     // Arrange
@@ -74,4 +77,31 @@ describe('TodosComponent', () => {
     expect( component.message ).toBe( errorMessage );                 
   });
 
+
+  // --------------------------------
+  // Test TodosComponent.delete()
+  // --------------------------------  
+
+  // Case #1: Simulate user click on Confirm checkbox and call Service.delete()
+  it( 'should call the server to delete the todo item if the user confirms', () => {
+
+    spyOn( window, 'confirm' ).and.returnValue( true );           // [KEY]: Simulate windows.confirm() call
+    let spy = spyOn( todoService, 'delete' ).and.returnValue( Observable.empty() ); // Don't care about the return value
+
+    component.delete( 1 );
+
+    expect( spy ).toHaveBeenCalledWith( 1 );        // [KEY]: to confirm the consistancy of the parameter
+  });
+
+  // Case #2: Simulate user click on Cancel checkbox and NOT call Service.delete()
+  it( 'should NOT call the server to delete the todo item if the user cancels', () => {
+
+    spyOn( window, 'confirm' ).and.returnValue( false );           
+    let spy = spyOn( todoService, 'delete' ).and.returnValue( Observable.empty() ); 
+
+    component.delete( 1 );
+
+    expect( spy ).not.toHaveBeenCalled();        // [KEY]: the method should NOT been called.
+  });
+  
 });
